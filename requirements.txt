@@ -1,2 +1,4 @@
-streamlit
-cryptography
+streamlit==1.38.0
+cryptography==43.0.1
+pymongo==4.8.0
+dnspython==2.6.1
