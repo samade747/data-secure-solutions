@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "secure-encryption-system"
+version = "0.1.0"
+description = "A secure data encryption system built with Streamlit and MongoDB"
+authors = ["Your Name <your.email@example.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.8"  # Compatible Python versions
+streamlit = "^1.38.0"  # Streamlit for web app
+cryptography = "^43.0.1"  # For Fernet encryption
+pymongo = "^4.8.0"  # For MongoDB connectivity
+dnspython = "^2.6.1"  # For MongoDB Atlas SRV records
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

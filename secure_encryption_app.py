@@ -7,7 +7,6 @@ from hashlib import pbkdf2_hmac  # For key derivation
 from datetime import datetime  # For audit log timestamps
 import secrets  # For generating secure 2FA codes
 from pymongo import MongoClient  # For MongoDB connectivity
-import os  # For environment variables
 
 try:
     from cryptography.fernet import Fernet  # For symmetric encryption
@@ -26,14 +25,21 @@ TFA_EXPIRY = 30  # 2FA code expiration time in seconds
 
 # MongoDB Connection
 try:
-    # Use environment variable for MongoDB URI or default to local
-    MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017")
+    # Retrieve MongoDB URI from Streamlit secrets
+    # Locally: Loaded from .streamlit/secrets.toml
+    # Streamlit Cloud: Loaded from app secrets in dashboard
+    MONGO_URI = st.secrets["mongodb"]["MONGO_URI"]
+    if not MONGO_URI:
+        raise ValueError("MONGO_URI not found in secrets")
+    
+    # Connect to MongoDB using the URI (supports Atlas or local MongoDB)
     client = MongoClient(MONGO_URI)
     db = client[DB_NAME]
     users_collection = db["users"]  # Collection for user credentials
     data_collection = db["data"]  # Collection for encrypted data
     audit_collection = db["audit_logs"]  # Collection for audit logs
 except Exception as e:
+    # Display error and stop if MongoDB connection fails
     st.error(f"Failed to connect to MongoDB: {str(e)}")
     st.stop()
 
@@ -156,7 +162,7 @@ def import_backup(encrypted_backup, master_password, username):
 
 # UI Navigation
 st.title("🛡️ Advanced Secure Data Encryption System (MongoDB)")  # App title
-# Navigation menu with added logout option
+# Navigation menu with logout option
 menu = ["Home", "Register", "Login", "Store Data", "Retrieve Data", "Search Data", "Backup Management", "Audit Log", "Logout"]
 choice = st.sidebar.selectbox("Navigation", menu)
 
@@ -171,7 +177,7 @@ if choice == "Home":
     - Encrypted backups
     - Audit logging
     - Two-factor authentication
-    - MongoDB storage
+    - MongoDB storage with secure secrets management
     """)
 
 # Register Page
